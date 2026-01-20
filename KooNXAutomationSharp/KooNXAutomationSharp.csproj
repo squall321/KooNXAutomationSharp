@@ -49,9 +49,27 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\FeatureCommands.cs" />
+    <Compile Include="Commands\ModelingCommands.cs" />
+    <Compile Include="Commands\UtilityCommands.cs" />
+    <Compile Include="Examples\CreateBox.cs" />
     <Compile Include="Examples\HelloNX.cs" />
+    <Compile Include="NXSession.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="Utils\GeometryUtils.cs" />
+    <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Features\StepExporter\StepExportHelper.cs" />
+    <Compile Include="Features\StepExporter\StepExporterCommand.cs" />
+    <Compile Include="Features\StepExporter\StepExporterDialog.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MenuScript\KooNXAutomation.men">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

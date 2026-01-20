@@ -1,0 +1,165 @@
+!============================================================
+! KooNXAutomationSharp Menu Script
+! NX 메뉴/리본에 통합되는 커스텀 메뉴 정의
+!============================================================
+VERSION 120
+
+!------------------------------------------------------------
+! 메인 메뉴 정의
+!------------------------------------------------------------
+MENU UG_GATEWAY
+    CASCADE_BUTTON KOONX_AUTOMATION_MENU
+    LABEL Koo NX Automation
+END_OF_MENU
+
+!------------------------------------------------------------
+! Koo NX Automation 서브메뉴
+!------------------------------------------------------------
+MENU KOONX_AUTOMATION_MENU
+
+    !-- Modeling Tools --
+    BUTTON KOONX_CREATE_BOX
+    LABEL Create Box
+    BITMAP box
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.ModelingCommands?CreateBox
+
+    BUTTON KOONX_CREATE_CYLINDER
+    LABEL Create Cylinder
+    BITMAP cylinder
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.ModelingCommands?CreateCylinder
+
+    BUTTON KOONX_CREATE_SPHERE
+    LABEL Create Sphere
+    BITMAP sphere
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.ModelingCommands?CreateSphere
+
+    SEPARATOR
+
+    !-- Feature Tools --
+    BUTTON KOONX_EXTRUDE
+    LABEL Extrude Feature
+    BITMAP extrude
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.FeatureCommands?Extrude
+
+    BUTTON KOONX_CHAMFER
+    LABEL Chamfer Edges
+    BITMAP chamfer
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.FeatureCommands?Chamfer
+
+    BUTTON KOONX_FILLET
+    LABEL Fillet Edges
+    BITMAP blend
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.FeatureCommands?Fillet
+
+    SEPARATOR
+
+    !-- Export Tools --
+    BUTTON KOONX_STEP_EXPORTER
+    LABEL STEP Exporter...
+    BITMAP export
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Features.StepExporter.StepExporterCommand?ShowDialog
+
+    SEPARATOR
+
+    !-- Utility Tools --
+    BUTTON KOONX_SHOW_INFO
+    LABEL Show Part Info
+    BITMAP info
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.UtilityCommands?ShowPartInfo
+
+    BUTTON KOONX_EXPORT_LOG
+    LABEL Export Log
+    BITMAP report
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.UtilityCommands?ExportLog
+
+    SEPARATOR
+
+    !-- About --
+    BUTTON KOONX_ABOUT
+    LABEL About KooNX
+    BITMAP help
+    ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.UtilityCommands?About
+
+END_OF_MENU
+
+!============================================================
+! Ribbon Tab 정의 (NX 1847 이상)
+!============================================================
+RIBBON_TAB KOONX_TAB
+    LABEL Koo Automation
+
+    RIBBON_GROUP KOONX_MODELING_GROUP
+        LABEL Modeling
+
+        RIBBON_BUTTON KOONX_CREATE_BOX_RIB
+        LABEL Box
+        BITMAP box
+        TOOLTIP Create a parametric box
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.ModelingCommands?CreateBox
+
+        RIBBON_BUTTON KOONX_CREATE_CYLINDER_RIB
+        LABEL Cylinder
+        BITMAP cylinder
+        TOOLTIP Create a parametric cylinder
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.ModelingCommands?CreateCylinder
+
+        RIBBON_BUTTON KOONX_CREATE_SPHERE_RIB
+        LABEL Sphere
+        BITMAP sphere
+        TOOLTIP Create a parametric sphere
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.ModelingCommands?CreateSphere
+
+    END_OF_RIBBON_GROUP
+
+    RIBBON_GROUP KOONX_FEATURE_GROUP
+        LABEL Features
+
+        RIBBON_BUTTON KOONX_EXTRUDE_RIB
+        LABEL Extrude
+        BITMAP extrude
+        TOOLTIP Extrude selected geometry
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.FeatureCommands?Extrude
+
+        RIBBON_BUTTON KOONX_CHAMFER_RIB
+        LABEL Chamfer
+        BITMAP chamfer
+        TOOLTIP Add chamfer to edges
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.FeatureCommands?Chamfer
+
+        RIBBON_BUTTON KOONX_FILLET_RIB
+        LABEL Fillet
+        BITMAP blend
+        TOOLTIP Add fillet to edges
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.FeatureCommands?Fillet
+
+    END_OF_RIBBON_GROUP
+
+    RIBBON_GROUP KOONX_EXPORT_GROUP
+        LABEL Export
+
+        RIBBON_BUTTON KOONX_STEP_EXPORTER_RIB
+        LABEL STEP Export
+        BITMAP export
+        TOOLTIP Export parts to STEP files
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Features.StepExporter.StepExporterCommand?ShowDialog
+
+    END_OF_RIBBON_GROUP
+
+    RIBBON_GROUP KOONX_UTILITY_GROUP
+        LABEL Utilities
+
+        RIBBON_BUTTON KOONX_SHOW_INFO_RIB
+        LABEL Part Info
+        BITMAP info
+        TOOLTIP Show information about current part
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.UtilityCommands?ShowPartInfo
+
+        RIBBON_BUTTON KOONX_ABOUT_RIB
+        LABEL About
+        BITMAP help
+        TOOLTIP About KooNX Automation
+        ACTIONS KooNXAutomationSharp.dll?KooNXAutomationSharp.Commands.UtilityCommands?About
+
+    END_OF_RIBBON_GROUP
+
+END_OF_RIBBON_TAB
