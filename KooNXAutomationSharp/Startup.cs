@@ -16,19 +16,19 @@ namespace KooNXAutomationSharp
         /// <summary>
         /// NX 진입점 - 파라미터 없는 버전 (일부 NX 버전용)
         /// </summary>
-        public static void Main()
+        public static int Main()
         {
-            Main(new string[0]);
+            return Main(new string[0]);
         }
 
         /// <summary>
         /// NX 진입점 - 파라미터 있는 버전
         /// </summary>
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             if (_initialized)
             {
-                return;
+                return 0;
             }
 
             try
@@ -55,10 +55,12 @@ namespace KooNXAutomationSharp
 
                 _initialized = true;
                 Logger.Info(ClassName, "초기화 완료");
+                return 0;
             }
             catch (Exception ex)
             {
                 Logger.Error(ClassName, "초기화 중 오류 발생", ex);
+                return 1;
             }
         }
 
