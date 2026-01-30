@@ -6,7 +6,7 @@ namespace KooNXAutomationSharp.Examples
 {
     public class CreateBox
     {
-        public static void Main()
+        public static void Run()
         {
             Session theSession = Session.GetSession();
             Part workPart = theSession.Parts.Work;

@@ -24,7 +24,7 @@ public class Program
         }
     }
 
-    public static int Main(string[] args)
+    public static int Run(string[] args)
     {
         int retValue = 0;
         try
