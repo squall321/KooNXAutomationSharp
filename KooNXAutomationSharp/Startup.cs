@@ -14,7 +14,15 @@ namespace KooNXAutomationSharp
         private static bool _initialized = false;
 
         /// <summary>
-        /// NX 진입점 - DLL이 로드될 때 호출됨
+        /// NX 진입점 - 파라미터 없는 버전 (일부 NX 버전용)
+        /// </summary>
+        public static void Main()
+        {
+            Main(new string[0]);
+        }
+
+        /// <summary>
+        /// NX 진입점 - 파라미터 있는 버전
         /// </summary>
         public static void Main(string[] args)
         {
