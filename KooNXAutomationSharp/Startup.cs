@@ -15,7 +15,7 @@ namespace KooNXAutomationSharp
         /// <summary>
         /// NX 진입점
         /// </summary>
-        public static int Main(string[] args)
+        public static void Main()
         {
             try
             {
@@ -27,8 +27,6 @@ namespace KooNXAutomationSharp
                 theSession.ListingWindow.WriteLine("========================================");
                 theSession.ListingWindow.WriteLine("  KooNX Automation Sharp Loaded!");
                 theSession.ListingWindow.WriteLine("========================================");
-
-                return 0;
             }
             catch (Exception ex)
             {
@@ -41,7 +39,6 @@ namespace KooNXAutomationSharp
                 {
                     // ignore
                 }
-                return 1;
             }
         }
 
