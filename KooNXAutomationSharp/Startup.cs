@@ -16,7 +16,7 @@ namespace KooNXAutomationSharp
         /// <summary>
         /// NX 진입점 - DLL이 로드될 때 호출됨
         /// </summary>
-        public static void Main()
+        public static void Main(string[] args)
         {
             if (_initialized)
             {
