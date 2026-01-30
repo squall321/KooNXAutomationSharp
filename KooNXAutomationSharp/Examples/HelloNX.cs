@@ -1,45 +1,48 @@
 using System;
 using NXOpen;
 
-public class Program
+namespace KooNXAutomationSharp.Examples
 {
-    private static Session theSession;
-
-    public Program()
+    public class HelloNXExample
     {
-        theSession = Session.GetSession();
+        private static Session theSession;
 
-        theSession.ListingWindow.Open();
-        theSession.ListingWindow.WriteLine("Hello from KooNXAutomationSharp!");
-        theSession.ListingWindow.WriteLine("NX Version: " + theSession.GetEnvironmentVariableValue("UGII_VERSION"));
+        public HelloNXExample()
+        {
+            theSession = Session.GetSession();
 
-        Part workPart = theSession.Parts.Work;
-        if (workPart != null)
-        {
-            theSession.ListingWindow.WriteLine("Current Part: " + workPart.Name);
-        }
-        else
-        {
-            theSession.ListingWindow.WriteLine("No part is currently open.");
-        }
-    }
+            theSession.ListingWindow.Open();
+            theSession.ListingWindow.WriteLine("Hello from KooNXAutomationSharp!");
+            theSession.ListingWindow.WriteLine("NX Version: " + theSession.GetEnvironmentVariableValue("UGII_VERSION"));
 
-    public static int Run(string[] args)
-    {
-        int retValue = 0;
-        try
-        {
-            Program theProgram = new Program();
+            Part workPart = theSession.Parts.Work;
+            if (workPart != null)
+            {
+                theSession.ListingWindow.WriteLine("Current Part: " + workPart.Name);
+            }
+            else
+            {
+                theSession.ListingWindow.WriteLine("No part is currently open.");
+            }
         }
-        catch (NXOpen.NXException ex)
-        {
-            UI.GetUI().NXMessageBox.Show("Error", NXMessageBox.DialogType.Error, ex.Message);
-        }
-        return retValue;
-    }
 
-    public static int GetUnloadOption(string arg)
-    {
-        return System.Convert.ToInt32(Session.LibraryUnloadOption.Immediately);
+        public static int Run(string[] args)
+        {
+            int retValue = 0;
+            try
+            {
+                HelloNXExample theProgram = new HelloNXExample();
+            }
+            catch (NXOpen.NXException ex)
+            {
+                UI.GetUI().NXMessageBox.Show("Error", NXMessageBox.DialogType.Error, ex.Message);
+            }
+            return retValue;
+        }
+
+        public static int GetUnloadOption(string arg)
+        {
+            return System.Convert.ToInt32(Session.LibraryUnloadOption.Immediately);
+        }
     }
 }
