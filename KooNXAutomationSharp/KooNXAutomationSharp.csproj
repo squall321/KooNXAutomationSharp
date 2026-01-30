@@ -62,6 +62,9 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\GeometryUtils.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Features\StepExporter\ContactAnalyzer.cs" />
+    <Compile Include="Features\StepExporter\ContactInfo.cs" />
+    <Compile Include="Features\StepExporter\Octree.cs" />
     <Compile Include="Features\StepExporter\StepExportHelper.cs" />
     <Compile Include="Features\StepExporter\StepExporterCommand.cs" />
     <Compile Include="Features\StepExporter\StepExporterDialog.cs" />

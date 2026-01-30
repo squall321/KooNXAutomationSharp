@@ -27,6 +27,9 @@ namespace KooNXAutomationSharp.Features.StepExporter
         private TextBox _folderPathTextBox;
         private Label _statusLabel;
         private ProgressBar _progressBar;
+        private CheckBox _contactAnalysisCheckBox;
+        private NumericUpDown _toleranceNumeric;
+        private Label _toleranceLabel;
 
         public StepExporterDialog()
         {
@@ -71,7 +74,7 @@ namespace KooNXAutomationSharp.Features.StepExporter
             {
                 Text = "STEP Exporter",
                 Width = 500,
-                Height = 550,
+                Height = 600,
                 StartPosition = FormStartPosition.CenterScreen,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
@@ -198,6 +201,46 @@ namespace KooNXAutomationSharp.Features.StepExporter
             _form.Controls.Add(browseBtn);
             yPos += 40;
 
+            // 접촉 분석 체크박스
+            _contactAnalysisCheckBox = new CheckBox
+            {
+                Text = "Export Contact Info (JSON)",
+                Left = 15,
+                Top = yPos,
+                Width = 200,
+                Checked = false
+            };
+            _contactAnalysisCheckBox.CheckedChanged += OnContactAnalysisCheckedChanged;
+            _form.Controls.Add(_contactAnalysisCheckBox);
+
+            // Tolerance 라벨
+            _toleranceLabel = new Label
+            {
+                Text = "Tolerance (mm):",
+                Left = 230,
+                Top = yPos + 3,
+                Width = 100,
+                Enabled = false
+            };
+            _form.Controls.Add(_toleranceLabel);
+
+            // Tolerance 입력
+            _toleranceNumeric = new NumericUpDown
+            {
+                Left = 335,
+                Top = yPos,
+                Width = 80,
+                DecimalPlaces = 3,
+                Minimum = 0.001m,
+                Maximum = 10.0m,
+                Value = 0.01m,
+                Increment = 0.001m,
+                Enabled = false
+            };
+            _form.Controls.Add(_toleranceNumeric);
+
+            yPos += 35;
+
             // 진행률 바
             _progressBar = new ProgressBar
             {
@@ -230,6 +273,17 @@ namespace KooNXAutomationSharp.Features.StepExporter
             };
             cancelBtn.Click += (s, e) => _form.Close();
             _form.Controls.Add(cancelBtn);
+        }
+
+        /// <summary>
+        /// 접촉 분석 체크박스 변경 이벤트
+        /// </summary>
+        private void OnContactAnalysisCheckedChanged(object sender, EventArgs e)
+        {
+            bool enabled = _contactAnalysisCheckBox.Checked;
+            _toleranceLabel.Enabled = enabled;
+            _toleranceNumeric.Enabled = enabled;
+            Logger.Debug(ClassName, $"접촉 분석 옵션: {enabled}");
         }
 
         /// <summary>
@@ -307,12 +361,15 @@ namespace KooNXAutomationSharp.Features.StepExporter
                 return;
             }
 
-            Logger.Info(ClassName, $"추출 시작 - {selectedParts.Count}개 파트, 출력: {_outputFolder}");
+            bool doContactAnalysis = _contactAnalysisCheckBox.Checked;
+            double tolerance = (double)_toleranceNumeric.Value;
+
+            Logger.Info(ClassName, $"추출 시작 - {selectedParts.Count}개 파트, 출력: {_outputFolder}, 접촉분석: {doContactAnalysis}");
 
             // 진행률 표시
             _progressBar.Visible = true;
             _progressBar.Minimum = 0;
-            _progressBar.Maximum = selectedParts.Count;
+            _progressBar.Maximum = 100;
             _progressBar.Value = 0;
 
             // 일괄 추출 실행
@@ -321,10 +378,44 @@ namespace KooNXAutomationSharp.Features.StepExporter
                 _outputFolder,
                 (current, total, partName) =>
                 {
-                    _progressBar.Value = current;
+                    int progress = (int)(50.0 * current / total);
+                    _progressBar.Value = progress;
                     _statusLabel.Text = $"Exporting: {partName} ({current}/{total})";
                     System.Windows.Forms.Application.DoEvents();
                 });
+
+            // 접촉 분석 실행
+            ContactAnalysisResult contactResult = null;
+            if (doContactAnalysis && result.SuccessCount >= 2)
+            {
+                _statusLabel.Text = "Analyzing contacts...";
+                System.Windows.Forms.Application.DoEvents();
+
+                try
+                {
+                    ContactAnalyzer analyzer = new ContactAnalyzer(tolerance);
+                    contactResult = analyzer.Analyze(
+                        selectedParts,
+                        (current, total, status) =>
+                        {
+                            int progress = 50 + (int)(50.0 * current / total);
+                            _progressBar.Value = Math.Min(progress, 100);
+                            _statusLabel.Text = status;
+                            System.Windows.Forms.Application.DoEvents();
+                        });
+
+                    // JSON 파일로 저장
+                    string contactJsonPath = Path.Combine(_outputFolder, "contact_info.json");
+                    contactResult.SaveToJson(contactJsonPath);
+                    Logger.Info(ClassName, $"접촉 정보 저장: {contactJsonPath}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ClassName, "접촉 분석 오류", ex);
+                    MessageBox.Show($"Contact analysis error: {ex.Message}", "STEP Exporter",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
 
             _progressBar.Visible = false;
             _statusLabel.Text = GetSelectionStatus();
@@ -333,8 +424,17 @@ namespace KooNXAutomationSharp.Features.StepExporter
             string message = $"Export completed!\n\n" +
                             $"Total: {result.TotalCount}\n" +
                             $"Success: {result.SuccessCount}\n" +
-                            $"Failed: {result.FailureCount}\n\n" +
-                            $"Output: {_outputFolder}";
+                            $"Failed: {result.FailureCount}";
+
+            if (contactResult != null)
+            {
+                message += $"\n\nContact Analysis:\n" +
+                          $"Contacts found: {contactResult.Contacts.Count}\n" +
+                          $"Tolerance: {tolerance} mm\n" +
+                          $"Saved: contact_info.json";
+            }
+
+            message += $"\n\nOutput: {_outputFolder}";
 
             if (result.FailureCount > 0)
             {

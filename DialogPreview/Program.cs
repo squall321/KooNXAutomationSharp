@@ -53,6 +53,9 @@ namespace DialogPreview
         private TextBox _folderPathTextBox;
         private Label _statusLabel;
         private ProgressBar _progressBar;
+        private CheckBox _contactAnalysisCheckBox;
+        private NumericUpDown _toleranceNumeric;
+        private Label _toleranceLabel;
 
         public StepExporterDialogPreview()
         {
@@ -68,7 +71,7 @@ namespace DialogPreview
             {
                 Text = "STEP Exporter (Preview)",
                 Width = 500,
-                Height = 550,
+                Height = 600,
                 StartPosition = FormStartPosition.CenterScreen,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
@@ -203,6 +206,49 @@ namespace DialogPreview
             _form.Controls.Add(browseBtn);
             yPos += 40;
 
+            // 접촉 분석 체크박스
+            _contactAnalysisCheckBox = new CheckBox
+            {
+                Text = "Export Contact Info (JSON)",
+                Left = 15,
+                Top = yPos,
+                Width = 200,
+                Checked = false,
+                Font = new Font("Segoe UI", 9)
+            };
+            _contactAnalysisCheckBox.CheckedChanged += OnContactAnalysisCheckedChanged;
+            _form.Controls.Add(_contactAnalysisCheckBox);
+
+            // Tolerance 라벨
+            _toleranceLabel = new Label
+            {
+                Text = "Tolerance (mm):",
+                Left = 230,
+                Top = yPos + 3,
+                Width = 100,
+                Enabled = false,
+                Font = new Font("Segoe UI", 9)
+            };
+            _form.Controls.Add(_toleranceLabel);
+
+            // Tolerance 입력
+            _toleranceNumeric = new NumericUpDown
+            {
+                Left = 335,
+                Top = yPos,
+                Width = 80,
+                DecimalPlaces = 3,
+                Minimum = 0.001m,
+                Maximum = 10.0m,
+                Value = 0.01m,
+                Increment = 0.001m,
+                Enabled = false,
+                Font = new Font("Segoe UI", 9)
+            };
+            _form.Controls.Add(_toleranceNumeric);
+
+            yPos += 35;
+
             // 진행률 바
             _progressBar = new ProgressBar
             {
@@ -274,6 +320,13 @@ namespace DialogPreview
             }
         }
 
+        private void OnContactAnalysisCheckedChanged(object sender, EventArgs e)
+        {
+            bool enabled = _contactAnalysisCheckBox.Checked;
+            _toleranceLabel.Enabled = enabled;
+            _toleranceNumeric.Enabled = enabled;
+        }
+
         private void OnExtractPreview(object sender, EventArgs e)
         {
             int selectedCount = _partListBox.CheckedItems.Count;
@@ -285,17 +338,54 @@ namespace DialogPreview
                 return;
             }
 
+            bool doContactAnalysis = _contactAnalysisCheckBox.Checked;
+            double tolerance = (double)_toleranceNumeric.Value;
+
             // 진행률 시뮬레이션
-            _progressBar.Maximum = selectedCount;
+            _progressBar.Maximum = 100;
             _progressBar.Value = 0;
 
+            // STEP 추출 시뮬레이션 (50%)
             for (int i = 0; i < selectedCount; i++)
             {
                 string partName = _partListBox.CheckedItems[i].ToString();
+                int progress = (int)(50.0 * (i + 1) / selectedCount);
+                _progressBar.Value = progress;
                 _statusLabel.Text = $"Exporting: {partName} ({i + 1}/{selectedCount})";
-                _progressBar.Value = i + 1;
                 Application.DoEvents();
-                System.Threading.Thread.Sleep(200); // 시뮬레이션 딜레이
+                System.Threading.Thread.Sleep(150);
+            }
+
+            // 접촉 분석 시뮬레이션 (50%)
+            int contactsFound = 0;
+            if (doContactAnalysis && selectedCount >= 2)
+            {
+                _statusLabel.Text = "Building spatial index...";
+                _progressBar.Value = 60;
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(300);
+
+                _statusLabel.Text = "Finding potential contacts...";
+                _progressBar.Value = 70;
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(300);
+
+                _statusLabel.Text = "Checking contacts...";
+                _progressBar.Value = 85;
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(300);
+
+                // 시뮬레이션용 접촉 개수 (파트 수에 비례)
+                contactsFound = Math.Max(0, selectedCount - 1) * 2;
+
+                _progressBar.Value = 100;
+                _statusLabel.Text = "Analysis complete";
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(200);
+            }
+            else
+            {
+                _progressBar.Value = 100;
             }
 
             _statusLabel.Text = GetSelectionStatus();
@@ -304,8 +394,17 @@ namespace DialogPreview
             string message = $"Export completed! (Preview)\n\n" +
                             $"Total: {selectedCount}\n" +
                             $"Success: {selectedCount}\n" +
-                            $"Failed: 0\n\n" +
-                            $"Output: {_outputFolder}";
+                            $"Failed: 0";
+
+            if (doContactAnalysis && selectedCount >= 2)
+            {
+                message += $"\n\nContact Analysis:\n" +
+                          $"Contacts found: {contactsFound}\n" +
+                          $"Tolerance: {tolerance} mm\n" +
+                          $"Saved: contact_info.json";
+            }
+
+            message += $"\n\nOutput: {_outputFolder}";
 
             MessageBox.Show(message, "STEP Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
