@@ -60,12 +60,5 @@ namespace KooNXAutomationSharp.Features.StepExporter
             Logger.MethodExit(ClassName, "ShowDialog");
         }
 
-        /// <summary>
-        /// NX 언로드 옵션
-        /// </summary>
-        public static int GetUnloadOption(string arg)
-        {
-            return (int)Session.LibraryUnloadOption.Immediately;
-        }
     }
 }

@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>KooNXAutomationSharp</RootNamespace>
     <AssemblyName>KooNXAutomationSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>x64</PlatformTarget>
     <!-- NX DLL 경로: UGII_BASE_DIR 환경 변수 사용 (NX 설치 시 자동 설정됨) -->
@@ -59,8 +59,9 @@
     <Compile Include="Commands\FeatureCommands.cs" />
     <Compile Include="Commands\ModelingCommands.cs" />
     <Compile Include="Commands\UtilityCommands.cs" />
-    <Compile Include="Examples\CreateBox.cs" />
-    <Compile Include="Examples\HelloNX.cs" />
+    <!-- Examples excluded from build - reference only -->
+    <!-- <Compile Include="Examples\CreateBox.cs" /> -->
+    <!-- <Compile Include="Examples\HelloNX.cs" /> -->
     <Compile Include="NXSession.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\GeometryUtils.cs" />

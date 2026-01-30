@@ -247,12 +247,5 @@ namespace KooNXAutomationSharp.Commands
             Logger.MethodExit(ClassName, "About");
         }
 
-        /// <summary>
-        /// NX 언로드 옵션
-        /// </summary>
-        public static int GetUnloadOption(string arg)
-        {
-            return (int)Session.LibraryUnloadOption.Immediately;
-        }
     }
 }
