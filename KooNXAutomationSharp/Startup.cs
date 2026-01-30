@@ -1,53 +1,65 @@
 using System;
 using NXOpen;
 
-namespace KooNXAutomationSharp
+/// <summary>
+/// KooNXAutomationSharp 시작점 클래스
+/// NX에서 DLL 로드 시 자동으로 호출됨
+/// </summary>
+public class Startup
 {
-    /// <summary>
-    /// KooNXAutomationSharp 시작점 클래스
-    /// NX에서 DLL 로드 시 자동으로 호출됨
-    /// </summary>
-    public class Startup
-    {
-        private static Session theSession;
-        private static UI theUI;
+    private static Session theSession = null;
+    private static UI theUI = null;
 
-        /// <summary>
-        /// NX 진입점
-        /// </summary>
-        public static void Main()
+    /// <summary>
+    /// NX 진입점
+    /// </summary>
+    public static void Main()
+    {
+        try
+        {
+            theSession = Session.GetSession();
+            theUI = UI.GetUI();
+
+            // 시작 메시지 출력
+            theSession.ListingWindow.Open();
+            theSession.ListingWindow.WriteLine("========================================");
+            theSession.ListingWindow.WriteLine("  KooNX Automation Sharp Loaded!");
+            theSession.ListingWindow.WriteLine("========================================");
+        }
+        catch (Exception ex)
         {
             try
             {
-                theSession = Session.GetSession();
-                theUI = UI.GetUI();
-
-                // 시작 메시지 출력
-                theSession.ListingWindow.Open();
-                theSession.ListingWindow.WriteLine("========================================");
-                theSession.ListingWindow.WriteLine("  KooNX Automation Sharp Loaded!");
-                theSession.ListingWindow.WriteLine("========================================");
+                if (theUI == null) theUI = UI.GetUI();
+                theUI.NXMessageBox.Show("Error", NXMessageBox.DialogType.Error, ex.ToString());
             }
-            catch (Exception ex)
+            catch
             {
-                try
-                {
-                    if (theUI == null) theUI = UI.GetUI();
-                    theUI.NXMessageBox.Show("Error", NXMessageBox.DialogType.Error, ex.Message);
-                }
-                catch
-                {
-                    // ignore
-                }
+                // ignore
             }
         }
+    }
 
-        /// <summary>
-        /// NX 언로드 옵션
-        /// </summary>
-        public static int GetUnloadOption(string dummy)
+    /// <summary>
+    /// NX 언로드 옵션
+    /// </summary>
+    public static int GetUnloadOption(string arg)
+    {
+        return System.Convert.ToInt32(Session.LibraryUnloadOption.Immediately);
+    }
+
+    /// <summary>
+    /// DLL 언로드 시 호출
+    /// </summary>
+    public static void UnloadLibrary(string arg)
+    {
+        try
         {
-            return (int)Session.LibraryUnloadOption.Immediately;
+            // cleanup
+        }
+        catch (Exception ex)
+        {
+            theUI.NXMessageBox.Show("Error", NXMessageBox.DialogType.Error, ex.ToString());
         }
     }
 }
